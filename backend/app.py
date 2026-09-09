@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 from recommendation_engine import recommend, build_study_path, load_resources
+from learning_features import enrich_resources, extract_intent, search, time_plan, dashboard, SYLLABUS
 
 app = Flask(__name__)
 CORS(app)
@@ -10,11 +11,55 @@ VALID_LEVELS = {"beginner", "basics", "intermediate", "advanced"}
 VALID_GOALS = {"exam", "concept", "practice", "project", "interview", "explore"}
 VALID_FORMATS = {"video", "article", "interactive", "practice", "notes"}
 VALID_DIFFICULTIES = {"easy", "moderate", "challenging"}
+SMART_SEARCH_CACHE = {}
 
 
 @app.route("/api/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok", "resource_count": len(load_resources())})
+
+
+def feature_resources():
+    return enrich_resources(load_resources())
+
+
+@app.route("/api/resources", methods=["GET"])
+def api_resources():
+    filters = {key: request.args.get(key) for key in ("type", "topic", "level", "syllabusModuleId")}
+    return jsonify({"resources": search(feature_resources(), "", {"topic": filters.get("topic") or ""}, filters)})
+
+
+@app.route("/api/search/smart", methods=["POST"])
+def api_smart_search():
+    payload = request.get_json(silent=True) or {}
+    query = (payload.get("query") or "").strip()
+    if not query: return jsonify({"error": "Enter a topic or learning question."}), 400
+    intent = payload.get("intent") or SMART_SEARCH_CACHE.get(query.lower()) or extract_intent(query)
+    SMART_SEARCH_CACHE[query.lower()] = intent
+    app.logger.info("smart-search topic=%s goal=%s urgency=%s", intent["topic"], intent["goal"], intent["urgency"])
+    return jsonify({"intent": intent, "results": search(feature_resources(), query, intent, payload.get("filters"))})
+
+
+@app.route("/api/plan/time-based", methods=["POST"])
+def api_time_plan():
+    payload = request.get_json(silent=True) or {}
+    try: total = max(5, int(payload.get("minutesAvailable", 20)))
+    except (TypeError, ValueError): total = 20
+    return jsonify(time_plan(feature_resources(), (payload.get("topic") or "Arrays").strip(), total))
+
+
+@app.route("/api/syllabus/tree", methods=["GET"])
+def api_syllabus():
+    parent = request.args.get("parentId")
+    if not parent: return jsonify({"children": SYLLABUS["universities"]})
+    children = [node for nodes in SYLLABUS.values() for node in nodes if node.get("parentId") == parent]
+    return jsonify({"children": children})
+
+
+@app.route("/api/dashboard/<user_id>", methods=["GET"])
+def api_dashboard(user_id):
+    data = dashboard(); data["userId"] = user_id
+    return jsonify(data)
 
 
 @app.route("/api/recommend", methods=["POST"])

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Clock, BadgeCheck, Sparkles, Bookmark, BookmarkCheck, ArrowUpRight, Star } from 'lucide-react'
+import { Clock, BadgeCheck, Sparkles, Bookmark, BookmarkCheck, ArrowUpRight, Star, FileText, Video, Code2, Gamepad2 } from 'lucide-react'
 import { FORMAT_META } from '../data/options'
 import { isResourceSaved, saveResource, removeResource } from '../services/storage'
 import ProgressRing from './ProgressRing'
@@ -14,6 +14,7 @@ export default function ResourceCard({ resource, featured = false }) {
   const [saved, setSaved] = useState(false)
   const format = FORMAT_META[resource.format]
   const FormatIcon = format?.icon
+  const typeMeta = { text: [FileText, 'text-indigo-soft bg-indigo-soft/10'], video: [Video, 'text-coral bg-coral/10'], practice: [Code2, 'text-teal-soft bg-teal-soft/10'], interactive: [Gamepad2, 'text-amber-soft bg-amber-soft/10'] }[resource.type]
 
   useEffect(() => {
     setSaved(isResourceSaved(resource.id))
@@ -47,6 +48,7 @@ export default function ResourceCard({ resource, featured = false }) {
       </div>
 
       <div className="flex flex-wrap gap-2 mt-5">
+        {typeMeta && <span className={`chip !py-1.5 !px-3 border-transparent text-xs ${typeMeta[1]}`}>{(() => { const TypeIcon = typeMeta[0]; return <TypeIcon size={13} /> })()} {resource.type}</span>}
         {FormatIcon && (
           <span className="chip !py-1.5 !px-3 bg-white/[0.04] text-xs">
             <FormatIcon size={13} strokeWidth={2} /> {format.label}

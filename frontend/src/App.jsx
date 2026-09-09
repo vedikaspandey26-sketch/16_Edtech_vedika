@@ -4,6 +4,8 @@ import LandingPage from './pages/LandingPage'
 import QuestionnairePage from './pages/QuestionnairePage'
 import ResultsPage from './pages/ResultsPage'
 import SavedPage from './pages/SavedPage'
+import ExplorePage from './pages/ExplorePage'
+import DashboardPage from './pages/DashboardPage'
 
 export default function App() {
   return (
@@ -15,6 +17,8 @@ export default function App() {
           <Route path="/questionnaire" element={<QuestionnairePage />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/saved" element={<SavedPage />} />
+          <Route path="/explore" element={<ExplorePage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>
       </main>
     </div>
