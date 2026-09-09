@@ -1,5 +1,6 @@
 """Demo-safe feature services for search, syllabus, plans and dashboard data."""
 import re
+import uuid
 from datetime import date
 
 TYPE_BY_FORMAT = {"article": "text", "notes": "text", "video": "video", "practice": "practice", "interactive": "interactive"}
@@ -21,6 +22,52 @@ SYLLABUS = {
         {"id": "trees", "name": "Trees", "parentId": "module-2"},
     ],
 }
+USERS, QUIZ_ATTEMPTS, ROADMAPS = {}, [], {}
+
+def mock_login(name, email):
+    user = next((u for u in USERS.values() if u["email"].lower() == email.lower()), None)
+    if not user:
+        user = {"id": str(uuid.uuid4()), "name": name, "email": email, "avatarSeed": name or email, "createdAt": str(date.today()), "preferences": {"defaultLevel": "Beginner", "subjects": [], "dailyMinutes": 20}}
+        USERS[user["id"]] = user
+    return {**user, "userId": user["id"], "token": f"mock-{uuid.uuid4()}"}
+
+QUESTION_BANK = {
+    "python": [("Which keyword defines a function in Python?", ["def", "func", "function", "define"], 0), ("What does len([1, 2, 3]) return?", ["3", "2", "[3]", "Error"], 0), ("Which collection stores key-value pairs?", ["dict", "list", "tuple", "set"], 0), ("What is the result of 7 // 2?", ["3", "3.5", "4", "Error"], 0), ("Which statement starts a conditional block?", ["if", "for", "def", "import"], 0)],
+    "arrays": [("What is the first valid index of a typical array?", ["0", "1", "-1", "It varies"], 0), ("Which operation is usually O(1) for an array?", ["Access by index", "Insert at start", "Search unsorted", "Delete at start"], 0)],
+    "recursion": [("What is essential in a recursive function?", ["A base case", "A global variable", "A loop", "A class"], 0), ("Recursion solves a problem by…", ["calling itself on a smaller case", "only using arrays", "avoiding functions", "sorting first"], 0)],
+    "trees": [("A tree node with no children is a…", ["leaf", "root", "edge", "branch"], 0), ("A binary tree node has at most…", ["two children", "one child", "three children", "unlimited children"], 0)],
+}
+
+def generate_quiz(topic, level, count):
+    bank = QUESTION_BANK.get(topic.lower(), [(f"Which statement best describes {topic}?", [f"A core concept to understand", "A database", "A browser", "A file type"], 0), (f"What is a good way to learn {topic}?", ["Study examples and practise", "Skip the basics", "Memorize without context", "Avoid feedback"], 0)])
+    questions = []
+    for i in range(count):
+        q, options, correct = bank[i % len(bank)]
+        questions.append({"id": f"q{i + 1}", "question": q, "options": options, "correctIndex": correct, "explanation": f"This is the key {topic} concept tested by this question."})
+    return {"questions": questions, "source": "static-bank"}
+
+def submit_quiz(payload):
+    questions, answers = payload.get("questions", []), payload.get("answers", [])
+    selected = {a.get("questionId"): a.get("selectedIndex") for a in answers}
+    checked = [{"questionId": q["id"], "selectedIndex": selected.get(q["id"]), "correct": selected.get(q["id"]) == q["correctIndex"]} for q in questions]
+    score = round(100 * sum(x["correct"] for x in checked) / len(questions)) if questions else 0
+    attempt = {"id": str(uuid.uuid4()), "userId": payload.get("userId"), "topic": payload.get("topic"), "level": payload.get("level"), "score": score, "answers": checked, "source": payload.get("source", "static-bank"), "attemptedAt": str(date.today())}
+    QUIZ_ATTEMPTS.append(attempt); return {"score": score, "answers": checked, "attempt": attempt, "xpAwarded": 20 if score >= 70 else 0}
+
+def chart_data(user_id):
+    attempts = [a for a in QUIZ_ATTEMPTS if a["userId"] == user_id][-10:]
+    topic_scores = {}
+    for a in attempts: topic_scores.setdefault(a["topic"], []).append(a["score"])
+    return {"quizTrend": [{"date": a["attemptedAt"], "score": a["score"]} for a in attempts], "resourcesByType": [{"type": k, "count": v} for k, v in {"text": 3, "video": 4, "practice": 3, "interactive": 2}.items()], "weeklyActivity": [{"day": day, "count": count} for day, count in zip(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [1, 2, 1, 3, 2, 0, 1])], "topicStrength": [{"topic": topic, "avgScore": round(sum(scores) / len(scores))} for topic, scores in topic_scores.items()]}
+
+def generate_roadmap(resources, goal, weeks):
+    title = f"{goal.strip().title()} roadmap"; topics = ["Arrays", "Linked Lists", "Recursion", "Trees"] if any(x in goal.lower() for x in ("data structure", "placement")) else ["Python Basics", "Arrays", "Recursion"]
+    nodes = [{"id": "goal", "label": title, "parentId": None, "order": 0, "estimatedHours": weeks * 4, "completed": False}]
+    for i, topic in enumerate(topics):
+        matches = sum(topic.lower() in r.get("topic", "").lower() for r in resources)
+        nodes.append({"id": f"topic-{i}", "label": topic, "parentId": "goal", "order": i + 1, "estimatedHours": max(2, weeks), "completed": False, "resourceCount": matches})
+        nodes.append({"id": f"practice-{i}", "label": f"Practise {topic}", "parentId": f"topic-{i}", "order": i + 1, "estimatedHours": 2, "completed": False, "resourceCount": matches})
+    return {"id": str(uuid.uuid4()), "title": title, "goal": goal, "estimatedWeeks": weeks, "nodes": nodes, "createdAt": str(date.today())}
 
 def _slug(value):
     return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")

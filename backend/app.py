@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 from recommendation_engine import recommend, build_study_path, load_resources
-from learning_features import enrich_resources, extract_intent, search, time_plan, dashboard, SYLLABUS
+from learning_features import enrich_resources, extract_intent, search, time_plan, dashboard, SYLLABUS, mock_login, USERS, generate_quiz, submit_quiz, chart_data, generate_roadmap, ROADMAPS
 
 app = Flask(__name__)
 CORS(app)
@@ -60,6 +60,56 @@ def api_syllabus():
 def api_dashboard(user_id):
     data = dashboard(); data["userId"] = user_id
     return jsonify(data)
+
+
+@app.route("/api/dashboard/<user_id>/charts", methods=["GET"])
+def api_charts(user_id): return jsonify(chart_data(user_id))
+
+
+@app.route("/api/auth/mock-login", methods=["POST"])
+def api_mock_login():
+    payload = request.get_json(silent=True) or {}; name = (payload.get("name") or "").strip(); email = (payload.get("email") or "").strip()
+    if email.lower() == "demo@studymate.ai": name = name or "Ava Sharma"
+    if not name or "@" not in email: return jsonify({"error": "Enter your name and a valid email."}), 400
+    return jsonify(mock_login(name, email))
+
+
+@app.route("/api/users/<user_id>", methods=["GET", "PUT"])
+def api_user(user_id):
+    if request.method == "GET": return jsonify(USERS.get(user_id) or {"error": "User not found"}), (200 if user_id in USERS else 404)
+    if user_id not in USERS: return jsonify({"error": "User not found"}), 404
+    payload = request.get_json(silent=True) or {}; user = USERS[user_id]
+    user["name"] = payload.get("name", user["name"]); user["preferences"].update(payload.get("preferences", {})); return jsonify(user)
+
+
+@app.route("/api/quiz/generate", methods=["POST"])
+def api_quiz_generate():
+    p = request.get_json(silent=True) or {}
+    count = min(10, max(1, int(p.get("numQuestions", 5))))
+    return jsonify(generate_quiz(p.get("topic") or "General Learning", p.get("level") or "Beginner", count))
+
+
+@app.route("/api/quiz/submit", methods=["POST"])
+def api_quiz_submit(): return jsonify(submit_quiz(request.get_json(silent=True) or {}))
+
+
+@app.route("/api/roadmap/generate", methods=["POST"])
+def api_roadmap_generate():
+    p = request.get_json(silent=True) or {}; goal = (p.get("goal") or "").strip()
+    if not goal: return jsonify({"error": "Enter a learning goal."}), 400
+    roadmap = generate_roadmap(feature_resources(), goal, int(p.get("timeframeWeeks") or 6)); roadmap["userId"] = p.get("userId"); ROADMAPS[roadmap["id"]] = roadmap; return jsonify(roadmap)
+
+
+@app.route("/api/roadmap/<roadmap_id>/node/<node_id>", methods=["PATCH"])
+def api_roadmap_node(roadmap_id, node_id):
+    roadmap = ROADMAPS.get(roadmap_id)
+    if not roadmap: return jsonify({"error": "Roadmap not found"}), 404
+    for node in roadmap["nodes"]:
+        if node["id"] == node_id: node["completed"] = not node["completed"]
+    for parent in roadmap["nodes"]:
+        children = [n for n in roadmap["nodes"] if n.get("parentId") == parent["id"]]
+        if children: parent["completed"] = all(n["completed"] for n in children)
+    return jsonify(roadmap)
 
 
 @app.route("/api/recommend", methods=["POST"])

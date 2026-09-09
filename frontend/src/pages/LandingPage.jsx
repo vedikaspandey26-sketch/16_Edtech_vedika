@@ -2,16 +2,17 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowRight, ListFilter, Sparkles, Clock3, CheckCircle2, XCircle } from 'lucide-react'
 
 const STEPS = [
-  { title: 'Tell us what you\u2019re learning', desc: 'Subject, topic, and how much you already know.', icon: ListFilter },
+  { title: 'Tell us what you are learning', desc: 'Subject, topic, and how much you already know.', icon: ListFilter },
   { title: 'Tell us how you learn best', desc: 'Your goal, preferred format, and how much time you have.', icon: Clock3 },
-  { title: 'Get your personalized study path', desc: '3\u20135 resources, ranked and explained \u2014 not 100 tabs to sort through.', icon: Sparkles },
+  { title: 'Get your personalized study path', desc: '3 resources, ranked and explained not 100 tabs to sort through.', icon: Sparkles },
 ]
 
 export default function LandingPage() {
   const navigate = useNavigate()
 
   return (
-    <div>
+    <div className="relative overflow-hidden">
+      <span className="ambient-star ambient-star-one" aria-hidden="true">✦</span><span className="ambient-star ambient-star-two" aria-hidden="true">•</span><span className="ambient-star ambient-star-three" aria-hidden="true">✦</span>
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-6 pt-20 sm:pt-28 pb-24">
         <div className="max-w-3xl animate-fadeUp">
@@ -25,7 +26,7 @@ export default function LandingPage() {
           </h1>
           <p className="text-lg text-text-secondary mt-6 max-w-xl leading-relaxed">
             StudyMate AI finds learning resources that match your level, goal, learning style,
-            and available time \u2014 so exam season feels like something you can handle, one
+            and available time so exam season feels like something you can handle, one
             step at a time.
           </p>
           <div className="flex flex-wrap items-center gap-4 mt-9">
@@ -68,7 +69,7 @@ export default function LandingPage() {
               Built for students, not search engines.
             </h2>
             <p className="text-text-secondary leading-relaxed">
-              The internet has plenty of content on every topic \u2014 that was never the problem.
+              The internet has plenty of content on every topic that was never the problem.
               The problem is finding what actually fits <em className="text-text-primary not-italic font-medium">you</em>:
               your level, your goal, and how much time you actually have today. StudyMate AI
               reduces the noise to a small, reasoned set of picks instead of endless results to compare.
@@ -105,9 +106,9 @@ export default function LandingPage() {
       {/* Final CTA */}
       <section className="max-w-6xl mx-auto px-6 py-24 border-t border-stroke text-center">
         <h2 className="font-display text-2xl sm:text-3xl font-semibold mb-3 max-w-2xl mx-auto">
-          We didn\u2019t search for a topic. We searched for a topic \u2014 for you.
+          We didn't search for a topic. We searched for a topic for you.
         </h2>
-        <p className="text-text-secondary mb-8">You\u2019ve got this. One step at a time.</p>
+        <p className="text-text-secondary mb-8">You've got this. One step at a time.</p>
         <button onClick={() => navigate('/questionnaire')} className="btn-primary">
           Find my resources <ArrowRight size={16} strokeWidth={2.5} />
         </button>

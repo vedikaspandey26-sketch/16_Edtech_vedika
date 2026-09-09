@@ -77,3 +77,7 @@
   background-clip: text;
   color: transparent;
 }
+
+.ambient-star { position:absolute; z-index:0; pointer-events:none; color:#7C86FF; opacity:.55; animation: drift 9s ease-in-out infinite; }
+.ambient-star-one { top:8rem; right:10%; font-size:2rem; }.ambient-star-two { top:28rem; left:6%; font-size:3rem; color:#5EEAD4; animation-delay:-3s; }.ambient-star-three { top:45rem; right:18%; font-size:1.5rem; animation-delay:-6s; }
+@keyframes drift { 0%,100% { transform:translate3d(0,0,0) rotate(0deg); } 50% { transform:translate3d(18px,-28px,0) rotate(18deg); } }

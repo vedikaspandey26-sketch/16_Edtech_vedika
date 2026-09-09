@@ -1,11 +1,14 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Home, Compass, Bookmark, Sparkles, LayoutDashboard } from 'lucide-react'
+import { Home, Compass, Bookmark, Sparkles, LayoutDashboard, CircleUserRound, BrainCircuit, Map } from 'lucide-react'
 
 const LINKS = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/questionnaire', label: 'Discover', icon: Compass },
   { to: '/explore', label: 'Smart search', icon: Sparkles },
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/quiz', label: 'Quiz', icon: BrainCircuit },
+  { to: '/mindmap', label: 'Roadmap', icon: Map },
+  { to: '/profile', label: 'Profile', icon: CircleUserRound },
   { to: '/saved', label: 'Saved', icon: Bookmark },
 ]
 
