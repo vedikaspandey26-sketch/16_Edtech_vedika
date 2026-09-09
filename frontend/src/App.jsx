@@ -7,7 +7,7 @@ import SavedPage from './pages/SavedPage'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-paper text-ink">
+    <div className="min-h-screen bg-abyss text-text-primary">
       <NavBar />
       <main>
         <Routes>

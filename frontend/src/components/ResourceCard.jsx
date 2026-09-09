@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react'
+import { Clock, BadgeCheck, Sparkles, Bookmark, BookmarkCheck, ArrowUpRight, Star } from 'lucide-react'
 import { FORMAT_META } from '../data/options'
 import { isResourceSaved, saveResource, removeResource } from '../services/storage'
+import ProgressRing from './ProgressRing'
 
-const DIFFICULTY_COLORS = {
-  easy: 'text-emerald-700 bg-emerald-50',
-  moderate: 'text-amber-700 bg-amber-50',
-  challenging: 'text-rose-700 bg-rose-50',
+const DIFFICULTY_STYLES = {
+  easy: 'text-teal-soft bg-teal-soft/10',
+  moderate: 'text-amber-soft bg-amber-soft/10',
+  challenging: 'text-coral bg-coral/10',
 }
 
 export default function ResourceCard({ resource, featured = false }) {
   const [saved, setSaved] = useState(false)
-  const format = FORMAT_META[resource.format] || { label: resource.format, icon: '📎' }
+  const format = FORMAT_META[resource.format]
+  const FormatIcon = format?.icon
 
   useEffect(() => {
     setSaved(isResourceSaved(resource.id))
@@ -27,51 +30,60 @@ export default function ResourceCard({ resource, featured = false }) {
   }
 
   return (
-    <div className={`card p-6 sm:p-7 ${featured ? 'border-ink/20 shadow-[0_4px_24px_rgba(20,33,61,0.10)]' : ''}`}>
+    <div className={`card card-hover p-6 sm:p-7 ${featured ? 'border-indigo-soft/25 shadow-glow' : ''}`}>
       {featured && (
-        <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink/60 mb-3">
-          <span>⭐ Best match</span>
+        <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-indigo-soft mb-4">
+          <Star size={13} fill="currentColor" strokeWidth={0} />
+          Best match
         </div>
       )}
 
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           <h3 className="font-display text-xl font-semibold leading-snug">{resource.title}</h3>
-          <p className="text-sm text-ink/60 mt-1">{resource.platform}</p>
+          <p className="text-sm text-text-tertiary mt-1">{resource.platform}</p>
         </div>
-        <div className="shrink-0 text-right">
-          <div className="font-display text-2xl font-semibold text-ink">{resource.match_score}%</div>
-          <div className="text-xs text-ink/50">match</div>
-        </div>
+        <ProgressRing value={resource.match_score} size={featured ? 64 : 52} />
       </div>
 
-      <div className="flex flex-wrap gap-2 mt-4">
-        <span className="chip !py-1 !px-3 bg-mist border-transparent text-xs">{format.icon} {format.label}</span>
-        <span className={`chip !py-1 !px-3 border-transparent text-xs capitalize ${DIFFICULTY_COLORS[resource.difficulty] || ''}`}>
+      <div className="flex flex-wrap gap-2 mt-5">
+        {FormatIcon && (
+          <span className="chip !py-1.5 !px-3 bg-white/[0.04] text-xs">
+            <FormatIcon size={13} strokeWidth={2} /> {format.label}
+          </span>
+        )}
+        <span className={`chip !py-1.5 !px-3 border-transparent text-xs capitalize ${DIFFICULTY_STYLES[resource.difficulty] || ''}`}>
           {resource.difficulty}
         </span>
-        <span className="chip !py-1 !px-3 bg-mist border-transparent text-xs">⏱ {resource.estimated_time} min</span>
-        <span className="chip !py-1 !px-3 bg-mist border-transparent text-xs">✓ {resource.credibility} credibility</span>
+        <span className="chip !py-1.5 !px-3 bg-white/[0.04] text-xs">
+          <Clock size={13} strokeWidth={2} /> {resource.estimated_time} min
+        </span>
+        <span className="chip !py-1.5 !px-3 bg-white/[0.04] text-xs">
+          <BadgeCheck size={13} strokeWidth={2} /> {resource.credibility} credibility
+        </span>
       </div>
 
-      <p className="text-sm text-ink/70 mt-4 leading-relaxed">{resource.description}</p>
+      <p className="text-sm text-text-secondary mt-4 leading-relaxed">{resource.description}</p>
 
-      <div className="mt-4 rounded-2xl bg-highlight/25 border border-highlightDeep/30 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-ink/60 mb-1">Why this resource?</p>
-        <p className="text-sm text-ink/85 leading-relaxed">{resource.reason}</p>
+      <div className="mt-5 rounded-2xl bg-gradient-to-br from-indigo-soft/[0.08] to-teal-soft/[0.06] border border-indigo-soft/15 p-4">
+        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-indigo-soft mb-1.5">
+          <Sparkles size={13} strokeWidth={2.25} /> Why this resource?
+        </p>
+        <p className="text-sm text-text-secondary leading-relaxed">{resource.reason}</p>
       </div>
 
-      <div className="flex items-center gap-3 mt-5">
+      <div className="flex items-center gap-3 mt-6">
         <a
           href={resource.url}
           target="_blank"
           rel="noopener noreferrer"
           className="btn-primary !py-2.5 !px-5 text-sm flex-1 sm:flex-none"
         >
-          Start learning →
+          Start learning <ArrowUpRight size={16} strokeWidth={2.25} />
         </a>
         <button onClick={toggleSave} className="btn-secondary !py-2.5 !px-5 text-sm">
-          {saved ? 'Saved ✓' : 'Save'}
+          {saved ? <BookmarkCheck size={16} strokeWidth={2.25} /> : <Bookmark size={16} strokeWidth={2.25} />}
+          {saved ? 'Saved' : 'Save'}
         </button>
       </div>
     </div>

@@ -26,6 +26,23 @@ studymate-ai/
       services/storage.js     localStorage save/remove + session handoff
 ```
 
+## Design system
+
+The UI runs a dark, "calm during exams" theme rather than a default light template:
+
+- **Palette** — deep navy/charcoal base (`abyss`, `surface`), soft indigo-lavender and teal
+  accents, muted amber/coral reserved for difficulty and status cues only. No pure black,
+  no harsh neon.
+- **Type** — Space Grotesk for display/headings, Inter for body, one consistent scale.
+- **Icons** — [lucide-react](https://lucide.dev) throughout (no emoji-as-UI); each option
+  in `data/options.js` carries an actual icon component.
+- **Components** — one shared button/chip/card/input system in `index.css`
+  (`.btn-primary`, `.btn-secondary`, `.chip`, `.card`, `.input-field`, `.glass`), so every
+  page (landing, questionnaire, results, saved) looks like the same product.
+- **Details** — match scores render as a gradient progress ring, empty states use a
+  shared `EmptyState` component instead of a blank page, and transitions stay in the
+  150–300ms range so the interface feels responsive without being distracting.
+
 ## How to install
 
 **Backend**

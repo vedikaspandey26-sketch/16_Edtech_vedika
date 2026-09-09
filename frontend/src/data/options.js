@@ -1,8 +1,14 @@
+import {
+  School, GraduationCap, BookMarked, Sprout,
+  FileEdit, Lightbulb, PenTool, Wrench, Briefcase, Compass,
+  Video, Newspaper, Gamepad2, ListChecks, StickyNote,
+} from 'lucide-react'
+
 export const ACADEMIC_LEVELS = [
-  { value: 'school', label: 'School', icon: '🎒' },
-  { value: 'undergraduate', label: 'Undergraduate', icon: '🎓' },
-  { value: 'postgraduate', label: 'Postgraduate', icon: '📘' },
-  { value: 'self-learning', label: 'Self-learning', icon: '🌱' },
+  { value: 'school', label: 'School', icon: School },
+  { value: 'undergraduate', label: 'Undergraduate', icon: GraduationCap },
+  { value: 'postgraduate', label: 'Postgraduate', icon: BookMarked },
+  { value: 'self-learning', label: 'Self-learning', icon: Sprout },
 ]
 
 export const SUBJECTS = [
@@ -24,20 +30,20 @@ export const KNOWLEDGE_LEVELS = [
 ]
 
 export const GOALS = [
-  { value: 'exam', label: 'Prepare for an exam', icon: '📝' },
-  { value: 'concept', label: 'Understand a concept', icon: '💡' },
-  { value: 'practice', label: 'Practice problems', icon: '✏️' },
-  { value: 'project', label: 'Build a project', icon: '🛠️' },
-  { value: 'interview', label: 'Interview preparation', icon: '💼' },
-  { value: 'explore', label: 'Explore the topic', icon: '🧭' },
+  { value: 'exam', label: 'Prepare for an exam', icon: FileEdit },
+  { value: 'concept', label: 'Understand a concept', icon: Lightbulb },
+  { value: 'practice', label: 'Practice problems', icon: PenTool },
+  { value: 'project', label: 'Build a project', icon: Wrench },
+  { value: 'interview', label: 'Interview preparation', icon: Briefcase },
+  { value: 'explore', label: 'Explore the topic', icon: Compass },
 ]
 
 export const FORMATS = [
-  { value: 'video', label: 'Video', icon: '🎥' },
-  { value: 'article', label: 'Articles', icon: '📰' },
-  { value: 'interactive', label: 'Interactive', icon: '🕹️' },
-  { value: 'practice', label: 'Practice questions', icon: '✅' },
-  { value: 'notes', label: 'Notes / PDFs', icon: '📄' },
+  { value: 'video', label: 'Video', icon: Video },
+  { value: 'article', label: 'Articles', icon: Newspaper },
+  { value: 'interactive', label: 'Interactive', icon: Gamepad2 },
+  { value: 'practice', label: 'Practice questions', icon: ListChecks },
+  { value: 'notes', label: 'Notes / PDFs', icon: StickyNote },
 ]
 
 export const STUDY_TIMES = [

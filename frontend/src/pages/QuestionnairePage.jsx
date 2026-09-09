@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ArrowRight, ArrowLeft, Sparkles } from 'lucide-react'
 import ProgressSteps from '../components/ProgressSteps'
 import Chip from '../components/Chip'
 import {
@@ -104,8 +105,13 @@ export default function QuestionnairePage() {
   if (loading) {
     return (
       <div className="max-w-xl mx-auto px-6 py-32 text-center">
-        <div className="w-10 h-10 mx-auto mb-6 rounded-full border-2 border-ink/15 border-t-ink animate-spin" />
+        <div className="relative w-14 h-14 mx-auto mb-7">
+          <div className="absolute inset-0 rounded-full border-2 border-white/[0.06]" />
+          <div className="absolute inset-0 rounded-full border-2 border-t-indigo-soft border-r-teal-soft border-b-transparent border-l-transparent animate-spin" />
+          <Sparkles size={18} className="absolute inset-0 m-auto text-indigo-soft" strokeWidth={2} />
+        </div>
         <p className="font-display text-lg font-semibold">{loadingMessage}</p>
+        <p className="text-sm text-text-tertiary mt-2">Just a moment \u2014 almost there.</p>
       </div>
     )
   }
@@ -115,10 +121,10 @@ export default function QuestionnairePage() {
       <ProgressSteps step={step} total={TOTAL_STEPS} />
 
       {step === 1 && (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-fadeUp">
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-1">What are you learning?</h2>
-            <p className="text-ink/60 text-sm">This helps us find resources on the right topic, at the right depth.</p>
+            <h2 className="font-display text-2xl font-semibold mb-1.5">What are you learning?</h2>
+            <p className="text-text-secondary text-sm">This helps us find resources on the right topic, at the right depth.</p>
           </div>
 
           <Field label="Academic level">
@@ -141,7 +147,7 @@ export default function QuestionnairePage() {
                 placeholder="Type your subject"
                 value={form.customSubject}
                 onChange={(e) => update('customSubject', e.target.value)}
-                className="mt-3 w-full rounded-xl border border-ink/15 px-4 py-2.5 text-sm focus:border-ink/40 outline-none"
+                className="input-field mt-3"
               />
             )}
           </Field>
@@ -152,7 +158,7 @@ export default function QuestionnairePage() {
               placeholder="e.g. Binary Search"
               value={form.topic}
               onChange={(e) => update('topic', e.target.value)}
-              className="w-full rounded-xl border border-ink/15 px-4 py-2.5 text-sm focus:border-ink/40 outline-none"
+              className="input-field"
             />
           </Field>
 
@@ -167,10 +173,10 @@ export default function QuestionnairePage() {
       )}
 
       {step === 2 && (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-fadeUp">
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-1">What\u2019s your goal?</h2>
-            <p className="text-ink/60 text-sm">So we can prioritize the right kind of resource.</p>
+            <h2 className="font-display text-2xl font-semibold mb-1.5">What\u2019s your goal?</h2>
+            <p className="text-text-secondary text-sm">So we can prioritize the right kind of resource.</p>
           </div>
 
           <Field label="Learning goal">
@@ -192,10 +198,10 @@ export default function QuestionnairePage() {
       )}
 
       {step === 3 && (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-fadeUp">
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-1">How do you like to learn?</h2>
-            <p className="text-ink/60 text-sm">Pick as many formats as you like, and how much time you have today.</p>
+            <h2 className="font-display text-2xl font-semibold mb-1.5">How do you like to learn?</h2>
+            <p className="text-text-secondary text-sm">Pick as many formats as you like, and how much time you have today.</p>
           </div>
 
           <Field label="Preferred format (select any)">
@@ -216,17 +222,23 @@ export default function QuestionnairePage() {
         </div>
       )}
 
-      {error && <p className="text-sm text-flag mt-6">{error}</p>}
+      {error && <p className="text-sm text-coral mt-6">{error}</p>}
 
       <div className="flex items-center justify-between mt-10">
         {step > 1 ? (
-          <button onClick={goBack} className="btn-secondary">Back</button>
+          <button onClick={goBack} className="btn-secondary">
+            <ArrowLeft size={16} strokeWidth={2.25} /> Back
+          </button>
         ) : <span />}
 
         {step < TOTAL_STEPS ? (
-          <button onClick={goNext} className="btn-primary">Continue</button>
+          <button onClick={goNext} className="btn-primary">
+            Continue <ArrowRight size={16} strokeWidth={2.5} />
+          </button>
         ) : (
-          <button onClick={handleSubmit} className="btn-primary">Get my study path →</button>
+          <button onClick={handleSubmit} className="btn-primary">
+            Get my study path <ArrowRight size={16} strokeWidth={2.5} />
+          </button>
         )}
       </div>
     </div>
@@ -236,7 +248,7 @@ export default function QuestionnairePage() {
 function Field({ label, children }) {
   return (
     <div>
-      <p className="text-sm font-semibold text-ink/70 mb-3">{label}</p>
+      <p className="text-sm font-semibold text-text-secondary mb-3">{label}</p>
       {children}
     </div>
   )
